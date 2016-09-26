@@ -13,9 +13,9 @@ import AlamofireImage
 // MARK: - Section Enum
 
 enum TrackSection: Int {
-  case NowPlaying = 0
-  case Next = 1
-  case Resume = 2
+  case nowPlaying = 0
+  case next = 1
+  case resume = 2
   
   var sections: Int {
     return isNext ? 3 : 2
@@ -23,67 +23,67 @@ enum TrackSection: Int {
   
   var rows: Int {
     switch self {
-    case .NowPlaying:
+    case .nowPlaying:
       return 1
-    case .Next:
+    case .next:
       return isNext ? SwiftPlayer.nextTracks().count : SwiftPlayer.mainTracks().count
-    case .Resume:
+    case .resume:
       return SwiftPlayer.mainTracks().count
     }
   }
   
   var title: String {
     switch self {
-    case .NowPlaying:
+    case .nowPlaying:
       return "  NOW PLAYING"
-    case .Next:
+    case .next:
       let songs = SwiftPlayer.nextTracks().count > 1 ? "SONGS" : "SONG"
       return isNext ? "  UP NEXT: \(SwiftPlayer.nextTracks().count) \(songs)" : "  UP NEXT: FROM \(albumName)"
-    case .Resume:
+    case .resume:
       return "  RESUME: \(albumName)"
     }
   }
   
-  func value(row: Int) -> PlayerTrack? {
+  func value(_ row: Int) -> PlayerTrack? {
     switch self {
-    case .NowPlaying:
+    case .nowPlaying:
       if let index = SwiftPlayer.currentTrackIndex() {
         return SwiftPlayer.trackAtIndex(index)
       }
       return nil
-    case .Next:
+    case .next:
       return isNext ? SwiftPlayer.nextTracks()[row] : SwiftPlayer.mainTracks()[row]
-    case .Resume:
+    case .resume:
       return SwiftPlayer.mainTracks()[row]
     }
   }
   
-  func selected(row: Int) {
+  func selected(_ row: Int) {
     switch self {
-    case .NowPlaying:
+    case .nowPlaying:
       break
-    case .Next:
+    case .next:
       if isNext {
         SwiftPlayer.playNextAtIndex(row)
       } else {
         SwiftPlayer.playMainAtIndex(row)
       }
       break
-    case .Resume:
+    case .resume:
       SwiftPlayer.playMainAtIndex(row)
       break
     }
   }
   
-  private var albumName: String {
+  fileprivate var albumName: String {
     if let name = SwiftPlayer.mainTracks()[0].album?.name {
-      return name.uppercaseString
+      return name.uppercased()
     } else {
-      return "Any Album".uppercaseString
+      return "Any Album".uppercased()
     }
   }
   
-  private var isNext: Bool {
+  fileprivate var isNext: Bool {
     return SwiftPlayer.nextTracks().count > 0
   }
 
@@ -93,7 +93,7 @@ enum TrackSection: Int {
 
 class QueueTableViewController: UITableViewController {
   
-  var sectionStatus = TrackSection.NowPlaying
+  var sectionStatus = TrackSection.nowPlaying
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -107,47 +107,47 @@ class QueueTableViewController: UITableViewController {
   
   // MARK: Table view data source
   
-  override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+  override func numberOfSections(in tableView: UITableView) -> Int {
     return sectionStatus.sections
   }
   
-  override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     sectionStatus = TrackSection.init(rawValue: section)!
     return sectionStatus.rows
   }
   
-  override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+  override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     sectionStatus = TrackSection.init(rawValue: section)!
     return sectionStatus.title
   }
   
-  override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+  override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
     let header = view as! UITableViewHeaderFooterView
-    header.textLabel?.font = UIFont.systemFontOfSize(12, weight: UIFontWeightRegular)
-    view.tintColor = UIColor.lightGrayColor().colorWithAlphaComponent(0.7)
+    header.textLabel?.font = UIFont.systemFont(ofSize: 12, weight: UIFontWeightRegular)
+    view.tintColor = UIColor.lightGray.withAlphaComponent(0.7)
   }
   
-  override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    return tableView.dequeueReusableCellWithIdentifier("QueueTableViewCell", forIndexPath: indexPath) as! QueueTableViewCell
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    return tableView.dequeueReusableCell(withIdentifier: "QueueTableViewCell", for: indexPath) as! QueueTableViewCell
   }
   
   // MARK: Table view delegate
   
-  override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-    if cell.respondsToSelector(Selector("setPreservesSuperviewLayoutMargins:")) {
-      cell.layoutMargins = UIEdgeInsetsZero
+  override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    if cell.responds(to: #selector(setter: UIView.preservesSuperviewLayoutMargins)) {
+      cell.layoutMargins = UIEdgeInsets.zero
       cell.preservesSuperviewLayoutMargins = false
     }
     
     let cell = cell as! QueueTableViewCell
-    sectionStatus = TrackSection.init(rawValue: indexPath.section)!
+    sectionStatus = TrackSection.init(rawValue: (indexPath as NSIndexPath).section)!
     cell.track = sectionStatus.value(indexPath.row)
   }
   
-  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    tableView.deselectRowAtIndexPath(indexPath, animated: true)
-    sectionStatus = TrackSection.init(rawValue: indexPath.section)!
-    sectionStatus.selected(indexPath.row)
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    tableView.deselectRow(at: indexPath, animated: true)
+    sectionStatus = TrackSection.init(rawValue: (indexPath as NSIndexPath).section)!
+    sectionStatus.selected((indexPath as NSIndexPath).row)
   }
   
 }

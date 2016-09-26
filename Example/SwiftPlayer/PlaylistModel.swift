@@ -14,16 +14,16 @@ import ObjectMapper
 struct TrackModel {
   static func localSampleData(withSize size: Int = 15) -> [PlayerTrack] {
     var tracks = [PlayerTrack]()
-    let url = NSBundle.mainBundle().URLForResource("hiphop_playlist_full", withExtension: "json")
-    let data = NSData(contentsOfURL: url!)
+    let url = Bundle.main.url(forResource: "hiphop_playlist_full", withExtension: "json")
+    let data = try? Data(contentsOf: url!)
     
     do {
-      let object = try NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments)
+      let object = try JSONSerialization.jsonObject(with: data!, options: .allowFragments)
       if let dictionary = object as? [String: AnyObject] {
-        guard let playlist = Mapper<PlaylistJSONParse>().map(dictionary)
+        guard let playlist = Mapper<PlaylistJSONParse>().map(JSON: dictionary)
           else { return tracks }
         
-        for (index, item) in playlist.data!.enumerate() {
+        for (index, item) in playlist.data!.enumerated() {
           if size < index { continue }
           let track = PlayerTrack(url: item.preview, name: item.title, image: item.album.coverBig, album: item.album.title, artist: item.artist.name)
           tracks.append(track)
@@ -42,7 +42,7 @@ struct TrackModel {
 struct PlaylistJSONParse: Mappable {
   var data: [TrackJSONParse]?
   
-  init?(_ map: Map) {}
+  init?(map: Map) {}
   
   mutating func mapping(map: Map) {
     data <- map["tracks.data"]
@@ -60,7 +60,7 @@ struct TrackJSONParse: Mappable {
   var album: AlbumJSONParse!
   var artist: ArtistJSONParse!
   
-  init?(_ map: Map) {}
+  init?(map: Map) {}
   
   mutating func mapping(map: Map) {
     id        <- map["id"]
@@ -84,7 +84,7 @@ struct AlbumJSONParse: Mappable {
   var coverBig: String!
   var tracklist: String!
   
-  init?(_ map: Map) {}
+  init?(map: Map) {}
   
   mutating func mapping(map: Map) {
     id           <- map["id"]
@@ -103,7 +103,7 @@ struct ArtistJSONParse: Mappable {
   var link: String!
   var tracklist: String!
   
-  init?(_ map: Map) {}
+  init?(map: Map) {}
   
   mutating func mapping(map: Map) {
     id        <- map["id"]

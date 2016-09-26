@@ -9,8 +9,8 @@
 import Foundation
 
 enum TrackType {
-    case Normal
-    case Next
+    case normal
+    case next
 }
 
 public struct PlayerTrack {
@@ -22,7 +22,7 @@ public struct PlayerTrack {
     
     public var modelObjectSupport: AnyObject?
     
-    var origin: TrackType! = TrackType.Normal
+    var origin: TrackType! = TrackType.normal
     var position: Int?
     
     public struct Album {

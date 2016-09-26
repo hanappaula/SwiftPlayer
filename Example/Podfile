@@ -1,12 +1,13 @@
 source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, ‘9.0’
 use_frameworks!
 
-target 'SwiftPlayer_Example', :exclusive => true do
+target 'SwiftPlayer_Example' do
   pod 'SwiftPlayer', :path => '../'
-  pod "ObjectMapper", "~> 1.1"
-  pod "AlamofireImage", "~> 2.3"
+  pod 'ObjectMapper'
+  pod 'AlamofireImage'
 end
 
-target 'SwiftPlayer_Tests', :exclusive => true do
+target 'SwiftPlayer_Tests' do
   pod 'SwiftPlayer', :path => '../'
 end

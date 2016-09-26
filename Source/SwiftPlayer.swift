@@ -11,19 +11,19 @@ import MediaPlayer
 
 // MARK: - SwiftPlayer Delegate -
 public protocol SwiftPlayerDelegate: class {
-    func playerDurationTime(time: Float)
-    func playerCurrentTimeChanged(time: Float)
-    func playerRateChanged(isPlaying: Bool)
-    func playerCurrentTrackChanged(track: PlayerTrack?)
+    func playerDurationTime(_ time: Float)
+    func playerCurrentTimeChanged(_ time: Float)
+    func playerRateChanged(_ isPlaying: Bool)
+    func playerCurrentTrackChanged(_ track: PlayerTrack?)
     func playerReadyToPlay()
     func playerRouteChanged()
 }
 
 extension SwiftPlayerDelegate {
-    func playerDurationTime(time: Float) {}
-    func playerCurrentTimeChanged(time: Float) {}
-    func playerRateChanged(isPlaying: Bool) {}
-    func playerCurrentTrackChanged(track: PlayerTrack?) {}
+    func playerDurationTime(_ time: Float) {}
+    func playerCurrentTimeChanged(_ time: Float) {}
+    func playerRateChanged(_ isPlaying: Bool) {}
+    func playerCurrentTrackChanged(_ track: PlayerTrack?) {}
     func playerRouteChanged() {}
 }
 
@@ -42,17 +42,17 @@ extension SwiftPlayerQueueDelegate {
 public struct SwiftPlayer {
     
     /// Set logs
-    public static func logs(active: Bool) {
+    public static func logs(_ active: Bool) {
         HysteriaManager.sharedInstance.logs = active
     }
     
     /// Set delegate
-    public static func delegate(delegate: SwiftPlayerDelegate) {
+    public static func delegate(_ delegate: SwiftPlayerDelegate) {
         HysteriaManager.sharedInstance.delegate = delegate
     }
     
     /// Set ViewController
-    public static func controller(controller: UIViewController?) {
+    public static func controller(_ controller: UIViewController?) {
         HysteriaManager.sharedInstance.controller = controller
     }
     
@@ -67,7 +67,7 @@ public struct SwiftPlayer {
     }
     
     /// ▶️🔢 Play music by specified index
-    public static func playAtIndex(index: Int) {
+    public static func playAtIndex(_ index: Int) {
         HysteriaManager.sharedInstance.playAtIndex(index)
     }
     
@@ -92,7 +92,7 @@ public struct SwiftPlayer {
     }
     
     /// Mute audio
-    public static func mute(mute: Bool) {
+    public static func mute(_ mute: Bool) {
         HysteriaManager.sharedInstance.mute(mute)
     }
     
@@ -148,7 +148,7 @@ public struct SwiftPlayer {
     }
     
     /// 🔘 Set new seek value from UISlider
-    public static func seekToWithSlider(slider: UISlider) {
+    public static func seekToWithSlider(_ slider: UISlider) {
         HysteriaManager.sharedInstance.seekTo(slider)
     }
     
@@ -158,25 +158,25 @@ public struct SwiftPlayer {
     }
     
     /// 🔊 Player volume view
-    public static func volumeViewFrom(view: UIView) -> MPVolumeView {
+    public static func volumeViewFrom(_ view: UIView) -> MPVolumeView {
         return HysteriaManager.sharedInstance.volumeViewFrom(view)
     }
     
     // MARK: QUEUE
     
     /// Set new playlist in player
-    public static func newPlaylist(playlist: [PlayerTrack]) -> SwiftPlayer.Type {
+    public static func newPlaylist(_ playlist: [PlayerTrack]) -> SwiftPlayer.Type {
         HysteriaManager.sharedInstance.setPlaylist(playlist)
         return self
     }
     
     /// Set queue delegate
-    public static func queueDelegate(delegate: SwiftPlayerQueueDelegate) {
+    public static func queueDelegate(_ delegate: SwiftPlayerQueueDelegate) {
         HysteriaManager.sharedInstance.queueDelegate = delegate
     }
     
     /// Add new track in next queue
-    public static func addNextTrack(track: PlayerTrack) {
+    public static func addNextTrack(_ track: PlayerTrack) {
         HysteriaManager.sharedInstance.addPlayNext(track)
     }
     
@@ -193,9 +193,9 @@ public struct SwiftPlayer {
     /// Tracks without playing track in next queue
     public static func nextTracks() -> [PlayerTrack] {
         if let index = SwiftPlayer.currentTrackIndex() {
-            if SwiftPlayer.trackAtIndex(index).origin == TrackType.Next {
+            if SwiftPlayer.trackAtIndex(index).origin == TrackType.next {
                 var pop = HysteriaManager.sharedInstance.queue.nextQueue
-                pop.removeAtIndex(0)
+                pop.remove(at: 0)
                 return pop
             }
         }
@@ -205,7 +205,7 @@ public struct SwiftPlayer {
     }
     
     /// All tracks by index
-    public static func trackAtIndex(index: Int) -> PlayerTrack {
+    public static func trackAtIndex(_ index: Int) -> PlayerTrack {
         return HysteriaManager.sharedInstance.queue.trackAtIndex(index)
     }
     
@@ -220,12 +220,12 @@ public struct SwiftPlayer {
     }
     
     /// Play music from main queue by specified index
-    public static func playMainAtIndex(index: Int) {
+    public static func playMainAtIndex(_ index: Int) {
         HysteriaManager.sharedInstance.playMainAtIndex(index)
     }
     
     /// Play music from next queue by specified index
-    public static func playNextAtIndex(index: Int) {
+    public static func playNextAtIndex(_ index: Int) {
         HysteriaManager.sharedInstance.playNextAtIndex(index)
     }
 }

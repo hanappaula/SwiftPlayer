@@ -28,12 +28,12 @@ class QueueTableViewCell: UITableViewCell {
       }
       
       if let image = track?.image {
-        coverImage.af_setImageWithURL(NSURL(string: image)!)
+        coverImage.af_setImage(withURL: URL(string: image)!)
       }
     }
   }
   
-  override func setSelected(selected: Bool, animated: Bool) {
+  override func setSelected(_ selected: Bool, animated: Bool) {
     super.setSelected(selected, animated: animated)
     // Configure the view for the selected state
   }

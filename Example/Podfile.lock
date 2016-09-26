@@ -1,26 +1,28 @@
 PODS:
-  - Alamofire (3.3.1)
-  - AlamofireImage (2.4.0):
-    - Alamofire (~> 3.3)
+  - Alamofire (4.0.0)
+  - AlamofireImage (3.0.0):
+    - Alamofire (~> 4.0)
   - HysteriaPlayer (2.1.9)
-  - ObjectMapper (1.2.0)
-  - SwiftPlayer (0.3.4):
+  - ObjectMapper (2.0.0)
+  - SwiftPlayer (0.3.5):
     - HysteriaPlayer (~> 2.1)
 
 DEPENDENCIES:
-  - AlamofireImage (~> 2.3)
-  - ObjectMapper (~> 1.1)
+  - AlamofireImage
+  - ObjectMapper
   - SwiftPlayer (from `../`)
 
 EXTERNAL SOURCES:
   SwiftPlayer:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
-  Alamofire: 369bc67b6f5ac33ded3648d7bd21c5bfb91c2ecc
-  AlamofireImage: 87408b652e0f5ae5fe364035f15aea8b9b24c77e
+  Alamofire: fef59f00388f267e52d9b432aa5d93dc97190f14
+  AlamofireImage: 6594aa1139a67dcd36cde6da79ea4e5b318e60fb
   HysteriaPlayer: 583c4cdfdd8e9016d1edffb3c1b945f8e1f1ecc5
-  ObjectMapper: b1e9c7c8a9f6400b72690c80072c131504caa66f
-  SwiftPlayer: e0c01a6b95fcb4aaafeb1168a7f7e60503186b11
+  ObjectMapper: aed2570edabbd3c9b26c939e1cabdb6558f933e0
+  SwiftPlayer: 37f2b7ddfbc22756f67ca06ca4ae4edc3ae2d389
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: 1dbde0609e155648c02c093e7c5c9431f2bdfab7
+
+COCOAPODS: 1.1.0.rc.2
