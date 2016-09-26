@@ -9,12 +9,21 @@ PODS:
 
 DEPENDENCIES:
   - AlamofireImage
+  - HysteriaPlayer (from `https://github.com/hanappaula/HysteriaPlayer.git`, commit `a7b285745b6c3f1772975f919a56c0916843e0e2`)
   - ObjectMapper
   - SwiftPlayer (from `../`)
 
 EXTERNAL SOURCES:
+  HysteriaPlayer:
+    :commit: a7b285745b6c3f1772975f919a56c0916843e0e2
+    :git: https://github.com/hanappaula/HysteriaPlayer.git
   SwiftPlayer:
     :path: "../"
+
+CHECKOUT OPTIONS:
+  HysteriaPlayer:
+    :commit: a7b285745b6c3f1772975f919a56c0916843e0e2
+    :git: https://github.com/hanappaula/HysteriaPlayer.git
 
 SPEC CHECKSUMS:
   Alamofire: fef59f00388f267e52d9b432aa5d93dc97190f14
@@ -23,6 +32,6 @@ SPEC CHECKSUMS:
   ObjectMapper: aed2570edabbd3c9b26c939e1cabdb6558f933e0
   SwiftPlayer: 37f2b7ddfbc22756f67ca06ca4ae4edc3ae2d389
 
-PODFILE CHECKSUM: 1dbde0609e155648c02c093e7c5c9431f2bdfab7
+PODFILE CHECKSUM: e5883ed1bd560cb80ea438975ecedd2fb2dcf5a8
 
 COCOAPODS: 1.1.0.rc.2

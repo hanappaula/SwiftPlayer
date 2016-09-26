@@ -6,6 +6,7 @@ target 'SwiftPlayer_Example' do
   pod 'SwiftPlayer', :path => '../'
   pod 'ObjectMapper'
   pod 'AlamofireImage'
+  pod 'HysteriaPlayer', :git => 'https://github.com/hanappaula/HysteriaPlayer.git', :commit => 'a7b285745b6c3f1772975f919a56c0916843e0e2'
 end
 
 target 'SwiftPlayer_Tests' do
