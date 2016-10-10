@@ -88,7 +88,21 @@ public struct SwiftPlayer {
     
     /// ⏪ Play previous music
     public static func previous() {
-        HysteriaManager.sharedInstance.previous()
+      do {
+        HysteriaManager.sharedInstance.pause()
+        var currentTime:CMTime
+        currentTime = HysteriaManager.sharedInstance.currentItem().currentTime()
+        NSLog("seconds = %f", CMTimeGetSeconds(currentTime));
+        
+        if CMTimeGetSeconds(currentTime) > 5.0 {
+          HysteriaManager.sharedInstance.currentItem().seek(to: kCMTimeZero)
+          HysteriaManager.sharedInstance.play()
+        }else{
+          HysteriaManager.sharedInstance.previous()
+        }
+      } catch {
+        print("Something went wrong!")
+      }
     }
     
     /// Mute audio

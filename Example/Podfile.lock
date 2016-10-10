@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (4.0.1)
-  - AlamofireImage (3.0.0):
+  - AlamofireImage (3.1.0):
     - Alamofire (~> 4.0)
   - HysteriaPlayer (2.1.9)
   - ObjectMapper (2.0.0)
@@ -27,7 +27,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: 7682d43245de14874acd142ec137b144aa1dd335
-  AlamofireImage: 6594aa1139a67dcd36cde6da79ea4e5b318e60fb
+  AlamofireImage: bb8c8351c51cb1633bb6be69b6dbbaff37ce65b7
   HysteriaPlayer: 583c4cdfdd8e9016d1edffb3c1b945f8e1f1ecc5
   ObjectMapper: aed2570edabbd3c9b26c939e1cabdb6558f933e0
   SwiftPlayer: d2940afbef7a15feb9d42e846ad91950f64a798c

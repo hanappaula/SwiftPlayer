@@ -86,6 +86,8 @@ extension ViewController {
     func updateAlbumCoverWithURL(_ url: String) {
         coverAlbum.af_setImage(withURL: URL(string: url)!)
         coverBackground.af_setImage(withURL: URL(string: url)!)
+      
+      
     }
     
 }
