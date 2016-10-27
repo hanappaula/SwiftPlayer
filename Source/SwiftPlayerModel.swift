@@ -9,47 +9,48 @@
 import Foundation
 
 enum TrackType {
-    case normal
-    case next
+  case normal
+  case next
 }
 
 public struct PlayerTrack {
-    public let url: String!
-    public let name: String?
-    public let image: String?
-    public let album: Album?
-    public let artist: Artist?
+  public let url: String!
+  public let name: String?
+  public let image: String?
+  public let album: Album?
+  public let artist: Artist?
+  
+  public var played: Bool = false
+  public var modelObjectSupport: AnyObject?
+  
+  var origin: TrackType! = TrackType.normal
+  var position: Int?
+  
+  public struct Album {
+    public var name: String?
     
-    public var modelObjectSupport: AnyObject?
+    public init() { }
     
-    var origin: TrackType! = TrackType.normal
-    var position: Int?
-    
-    public struct Album {
-        public var name: String?
-        
-        public init() { }
-        
-        public init(name: String?) {
-            self.name = name
-        }
+    public init(name: String?) {
+      self.name = name
     }
+  }
+  
+  public struct Artist {
+    public var name: String?
     
-    public struct Artist {
-        public var name: String?
-        
-        public init() { }
-        
-        public init(name: String?) {
-            self.name = name
-        }
-    }
+    public init() { }
     
-    public init(url: String, name: String? = nil, image: String? = nil, album: String? = nil, artist: String? = nil) {
-        self.url = url
-        self.name = name
-        self.image = image
-        self.album = Album(name: album)
-        self.artist = Artist(name: artist)
+    public init(name: String?) {
+      self.name = name
     }
+  }
+  
+  public init(url: String, name: String? = nil, image: String? = nil, album: String? = nil, artist: String? = nil) {
+    self.url = url
+    self.name = name
+    self.image = image
+    self.album = Album(name: album)
+    self.artist = Artist(name: artist)
+  }
 }
