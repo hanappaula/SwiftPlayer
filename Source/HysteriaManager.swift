@@ -33,7 +33,8 @@ class HysteriaManager: NSObject {
   fileprivate var isClicked = false
   fileprivate var lastIndexClicked = -1
   fileprivate var lastIndexShuffle = -1
-  
+  fileprivate var fixIndexAfterNextRemoved = false
+  fileprivate var lastHysteriaMainIndex = -1
   
   fileprivate override init() {
     super.init()
@@ -179,7 +180,9 @@ extension HysteriaManager {
   
   func previous() {
     if let index = currentIndex() {
-      queue.reorderQueuePrevious(index - 1, reorderHysteria: reorderHysteryaQueue())
+      //      queue.reorderQueuePrevious(index - 1, reorderHysteria: reorderHysteryaQueue())
+      //      queue.removeNextPlayedTracks()
+      //      updateCount()
       hysteriaPlayer.playPrevious()
     }
   }
@@ -206,6 +209,7 @@ extension HysteriaManager {
   
   func disableShuffle() {
     hysteriaPlayer.setPlayerShuffleMode(.off)
+    queue.setAllTracksPlayedFalse()
   }
   
   // Repeat Methods
@@ -272,7 +276,9 @@ extension HysteriaManager {
     if let index = currentIndex() {
       queue.newNextTrack(nTrack, nowIndex: index)
       updateCount()
+      fixIndexAfterNextRemoved = true
     }
+    
   }
   
   fileprivate func addHistoryTrack(_ track: PlayerTrack) {
@@ -281,22 +287,27 @@ extension HysteriaManager {
   
   func playMainAtIndex(_ index: Int) {
     if let qIndex = queue.indexToPlayAt(index) {
-      if queue.nextQueue.count > 0 {
-        lastIndexClicked = currentIndex()!
-      }
+      //      if queue.nextQueue.count > 0 {
+      //        lastIndexClicked = currentIndex()!
+      //      }
       fetchAndPlayAtIndex(qIndex)
-      isClicked = true
+      //      isClicked = true
     }
+    
   }
   
   func playNextAtIndex(_ index: Int) {
-    if index == 0 {
-      next()
-      return
-    }
-    if let qIndex = queue.indexToPlayNextAt(index, nowIndex: currentIndex()!) {
+    //    if index == 0 {
+    //      next()
+    //      return
+    //    }
+    //    if let qIndex = queue.indexToPlayNextAt(index, nowIndex: currentIndex()!) {
+    //      updateCount()
+    //      fetchAndPlayAtIndex(qIndex)
+    //    }
+    if let qIndex = queue.indexToPlayNextAt(index) {
       updateCount()
-      fetchAndPlayAtIndex(qIndex)
+      fetchAndPlayAtIndex(index)
     }
   }
   
@@ -305,6 +316,14 @@ extension HysteriaManager {
       self.hysteriaPlayer.moveItem(from: from, to: to)
     }
     return closure
+  }
+  
+  func trackAtIndex(_ index: Int) -> PlayerTrack {
+    if fixIndexAfterNextRemoved {
+      return queue.trackAtIndex(index - (lastHysteriaMainIndex + 1))
+    } else {
+      return queue.trackAtIndex(index)
+    }
   }
 }
 
@@ -316,8 +335,8 @@ extension HysteriaManager {
   }
   
   fileprivate func currentItem() -> PlayerTrack? {
-    if let index: NSNumber = hysteriaPlayer.getHysteriaIndex(hysteriaPlayer.getCurrentItem()) {
-      let track = queue.trackAtIndex(Int(index))
+    if let index = currentIndex() {
+      let track = trackAtIndex(index)
       addHistoryTrack(track)
       return track
     }else{
@@ -364,32 +383,51 @@ extension HysteriaManager: HysteriaPlayerDataSource {
   
   func hysteriaPlayerAsyncSetUrlForItem(at index: Int, preBuffer: Bool) {
     if preBuffer { return }
+    //    var deleteNextItems = true
+    var newIndex = index
     
-    if isClicked && lastIndexClicked != -1 {
-      isClicked = false
-      fetchAndPlayAtIndex(lastIndexClicked + 1)
-      lastIndexClicked = -1
-      return
+    //    if isClicked && lastIndexClicked != -1 {
+    //      isClicked = false
+    //      deleteNextItems = false
+    //      lastIndexClicked = -1
+    //    }
+    
+    queue.removeNextPlayedTracks()
+    updateCount()
+    
+    // Make hysteria play next item (relative to last main item played) on main queue after next queue be empty
+    if queue.nextQueue.isEmpty {
+      if fixIndexAfterNextRemoved == true {
+        fixIndexAfterNextRemoved = false
+        fetchAndPlayAtIndex(lastHysteriaMainIndex + 1)
+        return
+      }
+      lastHysteriaMainIndex = index
     }
     
     if shuffleStatus() == true {
-      if lastIndexShuffle != -1 {
-        queue.removeNextAtIndex(lastIndexShuffle)
-        hysteriaPlayer.removeItem(at: lastIndexShuffle)
-        lastIndexShuffle = -1
-      }
-      
-      if let indexShufle = queue.indexForShuffle() {
-        lastIndexShuffle = indexShufle
-        hysteriaPlayer.setupPlayerItem(with: URL(string: queue.trackAtIndex(indexShufle).url)!, index: indexShufle)
-        return
-      }
+      //      if lastIndexShuffle != -1 {
+      //        queue.removeNextAtIndex(lastIndexShuffle)
+      //        hysteriaPlayer.removeItem(at: lastIndexShuffle)
+      //        lastIndexShuffle = -1
+      //      }
+      //
+      //      if let indexShufle = queue.indexForShuffle() {
+      //        lastIndexShuffle = indexShufle
+      //        hysteriaPlayer.setupPlayerItem(with: URL(string: queue.trackAtIndex(indexShufle).url)!, index: indexShufle)
+      //        return
+      //      }
+      newIndex = queue.indexForShuffle()!
     }
     
-    guard let track = queue.queueAtIndex(index) else {
-      hysteriaPlayer.removeItem(at: index - 1)
+    guard let track = queue.queueAtIndex(newIndex, shuffleEnabled: shuffleStatus()) else {
+      //      hysteriaPlayer.removeItem(at: index - 1)
       fetchAndPlayAtIndex(index - 1)
       return
+    }
+    
+    if track.origin == TrackType.next {
+      queue.setNextTrackAsPlayed(track)
     }
     
     hysteriaPlayer.setupPlayerItem(with: URL(string: track.url)!, index: index)

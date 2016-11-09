@@ -224,7 +224,7 @@ public struct SwiftPlayer {
   
   /// All tracks by index
   public static func trackAtIndex(_ index: Int) -> PlayerTrack {
-    return HysteriaManager.sharedInstance.queue.trackAtIndex(index)
+    return HysteriaManager.sharedInstance.trackAtIndex(index)
   }
   
   /// Current AVPlayerItem
