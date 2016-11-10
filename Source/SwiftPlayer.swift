@@ -210,16 +210,14 @@ public struct SwiftPlayer {
   
   /// Tracks without playing track in next queue
   public static func nextTracks() -> [PlayerTrack] {
-    if let index = SwiftPlayer.currentTrackIndex() {
-      if SwiftPlayer.trackAtIndex(index).origin == TrackType.next {
-        var pop = HysteriaManager.sharedInstance.queue.nextQueue
-        pop.remove(at: 0)
-        return pop
+    var nextTracks = HysteriaManager.sharedInstance.queue.nextQueue
+    if let currentTrack = currentTrack() {
+      if currentTrack.origin == TrackType.next {
+        nextTracks.removeFirst()
       }
     }
     
-    
-    return HysteriaManager.sharedInstance.queue.nextQueue
+    return nextTracks
   }
   
   /// All tracks by index
@@ -228,8 +226,8 @@ public struct SwiftPlayer {
   }
   
   /// Current AVPlayerItem
-  public static func currentItem() -> AVPlayerItem {
-    return HysteriaManager.sharedInstance.currentItem()
+  public static func currentTrack() -> PlayerTrack? {
+    return HysteriaManager.sharedInstance.currentTrack()
   }
   
   /// Current index of playlist
