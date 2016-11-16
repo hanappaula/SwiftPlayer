@@ -28,25 +28,30 @@ struct PlayerQueue {
   
   ///////////////////////////////////////////////
   mutating func newNextTrack(_ track: PlayerTrack, nowIndex: Int) {
-    nextQueue.insert(track, at: 0)
-    //        allTracks.insert(track, at: nowIndex + 1)
-    allTracks.insert(track, at: 0)
-  }
-  
-  ///////////////////////////////////////////////
-  mutating func removeNextAtIndex(_ index: Int) {
-    //        allTracks.remove(at: index)
-    //        nextQueue.remove(at: 0)
+    var tk = track
+    tk.origin = TrackType.next
+    nextQueue.insert(tk, at: 0)
+    allTracks.insert(tk, at: 0)
     
+    for (index, track) in nextQueue.enumerated() {
+      nextQueue[index].position = index
+    }
   }
   
   ///////////////////////////////////////////////
   mutating func queueAtIndex(_ index: Int, shuffleEnabled: Bool, requestFromTouch: Bool) -> PlayerTrack? {
+    var newIndex = index
     if !shuffleEnabled && !requestFromTouch && allTracks[0].origin == TrackType.next {
         return allTracks[0]
     }
     
-    return allTracks[index]
+    // Prevent index out of range
+    if newIndex == allTracks.count {
+      newIndex -= 1
+    } else if newIndex < 0 {
+      newIndex = 0
+    }
+    return allTracks[newIndex]
   }
   
   ///////////////////////////////////////////////
@@ -54,20 +59,16 @@ struct PlayerQueue {
     for (index, track) in allTracks[0..<nextQueue.count].enumerated() where track.origin == TrackType.next {
       if track.played {
         allTracks.remove(at: index)
-        for (idx, tr) in nextQueue.enumerated() where tr.name == track.name {
-          nextQueue.remove(at: idx)
-        }
+        nextQueue.remove(at: index)
       }
     }
   }
   
   ///////////////////////////////////////////////
   mutating func setNextTrackAsPlayed(_ track: PlayerTrack) {
-    for (index, tk) in allTracks.enumerated() where tk.name == track.name && track.origin == TrackType.next {
+    for (index, tk) in allTracks.enumerated() where tk.position == track.position && track.origin == TrackType.next {
       allTracks[index].played = true
-      for (idx, tr) in nextQueue.enumerated() where tr.name == track.name {
-        nextQueue[idx].played = true
-      }
+      nextQueue[index].played = true
       break
     }
   }
@@ -119,26 +120,6 @@ struct PlayerQueue {
     }
     
     return 0
-  }
-  
-  ///////////////////////////////////////////////
-  mutating func reorderQueuePrevious(_ nowIndex: Int, reorderHysteria: (_ from: Int, _ to: Int) -> Void) {
-    if nowIndex <= 0 { return }
-    
-    var totalNext = 0
-    for nTrack in allTracks where nTrack.origin == TrackType.next {
-      totalNext += 1
-    }
-    
-    while totalNext != 0 {
-      for (index, track) in allTracks.reversed().enumerated() where track.origin == TrackType.next {
-        let track = allTracks[((allTracks.count - 1) - index)]
-        allTracks.moveItem(fromIndex: ((allTracks.count - 1) - index), toIndex: nowIndex + 1)
-        reorderHysteria(((allTracks.count - 1) - index), nowIndex + 1)
-        totalNext -= 1
-        break
-      }
-    }
   }
   
   ///////////////////////////////////////////////

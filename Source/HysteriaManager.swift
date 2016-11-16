@@ -33,7 +33,9 @@ class HysteriaManager: NSObject {
   fileprivate var requestFromTouch = false
   fileprivate var lastIndexShuffle = -1
   fileprivate var fixIndexAfterNextRemoved = false
-  fileprivate var lastHysteriaMainIndex = -1
+  
+  var curTrack: PlayerTrack?
+  var lastMainTrackPlayed: PlayerTrack?
   
   fileprivate override init() {
     super.init()
@@ -172,11 +174,36 @@ extension HysteriaManager {
   }
   
   func next() {
+    queue.removeNextPlayedTracks()
+    updateCount()
+    if !queue.nextQueue.isEmpty {
+      
+    fetchAndPlayAtIndex(queue.totalTracks() - 1)
+    return
+    }
     hysteriaPlayer.playNext()
     play()
   }
   
   func previous() {
+    // Play previous mainIndex
+    if !queue.nextQueue.isEmpty {
+      requestFromTouch = true
+      if let track = lastMainTrackPlayed {
+//        if track.origin == TrackType.normal {
+//          if lastHysteriaMainIndex - 1 >= 0 {
+//            fetchAndPlayAtIndex(lastHysteriaMainIndex - 1)
+//          } else {
+//            fetchAndPlayAtIndex(0)
+//          }
+//        } else {
+//          fetchAndPlayAtIndex(lastHysteriaMainIndex)
+//        }
+        fetchAndPlayAtIndex(track.position! + queue.nextQueue.count)
+        return
+      }
+    }
+
     if let index = currentIndex() {
       hysteriaPlayer.playPrevious()
     }
@@ -282,16 +309,20 @@ extension HysteriaManager {
   
   func playMainAtIndex(_ index: Int) {
     if let qIndex = queue.indexToPlayAt(index) {
-      fetchAndPlayAtIndex(qIndex)
       requestFromTouch = true
+      fetchAndPlayAtIndex(qIndex)
     }
     
   }
   
   func playNextAtIndex(_ index: Int) {
-    if let qIndex = queue.indexToPlayNextAt(index) {
+    var newIndex = index
+    if curTrack?.origin == TrackType.next {
+      newIndex = newIndex + 1
+    }
+    if let qIndex = queue.indexToPlayNextAt(newIndex) {
       updateCount()
-      fetchAndPlayAtIndex(index)
+      fetchAndPlayAtIndex(qIndex)
     }
   }
   
@@ -310,16 +341,7 @@ extension HysteriaManager {
   }
   
   func currentTrack() -> PlayerTrack? {
-    if let index = currentIndex() {
-      if fixIndexAfterNextRemoved {
-        if index == 0 {
-          // First main track
-          return queue.trackAtIndex(queue.nextQueue.count)
-        }
-      }
-      return trackAtIndex(index)
-    }
-    return nil
+    return curTrack
   }
 }
 
@@ -331,8 +353,7 @@ extension HysteriaManager {
   }
   
   fileprivate func currentItem() -> PlayerTrack? {
-    if let index = currentIndex() {
-      let track = trackAtIndex(index)
+    if let track = currentTrack() {
       addHistoryTrack(track)
       return track
     }else{
@@ -389,30 +410,46 @@ extension HysteriaManager: HysteriaPlayerDataSource {
       if fixIndexAfterNextRemoved == true {
         fixIndexAfterNextRemoved = false
         if !requestFromTouch {
-          fetchAndPlayAtIndex(lastHysteriaMainIndex + 1)
-          return
-        } else {
-          // In case there was one item on next queue before 
-          fetchAndPlayAtIndex(index - 1)
+          if let lastMainTrack = lastMainTrackPlayed {
+            if lastMainTrack.position! + 1 == (queue.totalTracks() - 1) {
+              fetchAndPlayAtIndex(lastMainTrack.position! + 1)
+            } else {
+              fetchAndPlayAtIndex(0)
+            }
+            return
+          }
         }
       }
-      lastHysteriaMainIndex = index
     }
     
     if shuffleStatus() == true {
       newIndex = queue.indexForShuffle()!
     }
     
+    // After queue was cleaned, next now playing will be gone of all tracks
+    if curTrack?.origin == TrackType.next && !queue.nextQueue.isEmpty {
+      if newIndex - 1 >= 0 {
+        newIndex = newIndex - 1
+      }
+    }
     guard let track = queue.queueAtIndex(newIndex, shuffleEnabled: shuffleStatus(), requestFromTouch: requestFromTouch) else {
-      fetchAndPlayAtIndex(index - 1)
+      fetchAndPlayAtIndex(0)
       return
     }
     
     if track.origin == TrackType.next {
       queue.setNextTrackAsPlayed(track)
+    } else {
+      if let currentTrack = curTrack {
+        if currentTrack.origin == TrackType.normal {
+          lastMainTrackPlayed = track
+        }
+      }
     }
     
     requestFromTouch = false
+    
+    curTrack = track
     
     hysteriaPlayer.setupPlayerItem(with: URL(string: track.url)!, index: index)
   }

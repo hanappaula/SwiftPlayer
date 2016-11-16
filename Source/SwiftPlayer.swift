@@ -211,9 +211,11 @@ public struct SwiftPlayer {
   /// Tracks without playing track in next queue
   public static func nextTracks() -> [PlayerTrack] {
     var nextTracks = HysteriaManager.sharedInstance.queue.nextQueue
-    if let currentTrack = currentTrack() {
-      if currentTrack.origin == TrackType.next {
-        nextTracks.removeFirst()
+    if !nextTracks.isEmpty {
+      if let currentTrack = currentTrack() {
+        if currentTrack.origin == TrackType.next {
+          nextTracks.removeFirst()
+        }
       }
     }
     
