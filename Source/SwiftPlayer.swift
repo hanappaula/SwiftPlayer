@@ -227,9 +227,20 @@ public struct SwiftPlayer {
     return HysteriaManager.sharedInstance.trackAtIndex(index)
   }
   
-  /// Current AVPlayerItem
+  /// Current Track
   public static func currentTrack() -> PlayerTrack? {
     return HysteriaManager.sharedInstance.currentTrack()
+  }
+  
+  /// Current AVPlayerItem
+  public static func currentItem() -> AVPlayerItem {
+    return HysteriaManager.sharedInstance.currentItem()
+  }
+  
+  // Get if could resume play
+  public static func canResumePlay() -> Bool {
+    HysteriaManager.sharedInstance.play()
+    return HysteriaManager.sharedInstance.hysteriaPlayer.getStatus() != .forcePause
   }
   
   /// Current index of playlist
