@@ -177,9 +177,10 @@ extension HysteriaManager {
     queue.removeNextPlayedTracks()
     updateCount()
     if !queue.nextQueue.isEmpty {
-      
-    fetchAndPlayAtIndex(queue.totalTracks() - 1)
-    return
+      if let lastMainTrack = lastMainTrackPlayed {
+        fetchAndPlayAtIndex(lastMainTrack.position!)
+        return
+      }
     }
     hysteriaPlayer.playNext()
     play()
@@ -190,16 +191,13 @@ extension HysteriaManager {
     if !queue.nextQueue.isEmpty {
       requestFromTouch = true
       if let track = lastMainTrackPlayed {
-//        if track.origin == TrackType.normal {
-//          if lastHysteriaMainIndex - 1 >= 0 {
-//            fetchAndPlayAtIndex(lastHysteriaMainIndex - 1)
-//          } else {
-//            fetchAndPlayAtIndex(0)
-//          }
-//        } else {
-//          fetchAndPlayAtIndex(lastHysteriaMainIndex)
-//        }
-        fetchAndPlayAtIndex(track.position! + queue.nextQueue.count)
+        if let currentTrack = curTrack {
+          if currentTrack.origin == TrackType.next {
+            fetchAndPlayAtIndex(track.position! + queue.nextQueue.count)
+          } else {
+            fetchAndPlayAtIndex(((track.position! - 1) < 0 ? 0 : (track.position! - 1)) + queue.nextQueue.count)
+          }
+        }
         return
       }
     }
@@ -411,7 +409,7 @@ extension HysteriaManager: HysteriaPlayerDataSource {
         fixIndexAfterNextRemoved = false
         if !requestFromTouch {
           if let lastMainTrack = lastMainTrackPlayed {
-            if lastMainTrack.position! + 1 == (queue.totalTracks() - 1) {
+            if lastMainTrack.position! + 1 <= (queue.totalTracks() - 1) {
               fetchAndPlayAtIndex(lastMainTrack.position! + 1)
             } else {
               fetchAndPlayAtIndex(0)
@@ -437,6 +435,8 @@ extension HysteriaManager: HysteriaPlayerDataSource {
       return
     }
     
+    curTrack = track
+    
     if track.origin == TrackType.next {
       queue.setNextTrackAsPlayed(track)
     } else {
@@ -448,8 +448,6 @@ extension HysteriaManager: HysteriaPlayerDataSource {
     }
     
     requestFromTouch = false
-    
-    curTrack = track
     
     hysteriaPlayer.setupPlayerItem(with: URL(string: track.url)!, index: index)
   }
